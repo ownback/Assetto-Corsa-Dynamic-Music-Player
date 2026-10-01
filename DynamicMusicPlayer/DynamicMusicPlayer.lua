@@ -2,6 +2,7 @@
 CSPBuild = ac.getPatchVersionCode()
 math.randomseed(os.preciseClock())
 globalDT = 0.16
+AudioPlayer = require('AudioPlayer') -- Cross-platform audio backend: FMOD (Windows + Linux) with ui.MediaPlayer fallback
 
 CoverArtExportCanvas = ui.ExtraCanvas(vec2(256, 256), 1, render.AntialiasingMode.ExtraSharpCMAA)
 function RenderCoverArtExportCanvas()
@@ -1172,7 +1173,7 @@ function script.update(dt)
             CurrentVolume = 0
         end
         if #MusicQueue == 0 or (PlayerFinished and (not PlayedFinishTrack) and FinishMusic[1]) then
-            CurrentTrack = ui.MediaPlayer(getNewTrack())
+            CurrentTrack = AudioPlayer.create(getNewTrack())
             DontSkipCurrentTrack = false
         else
             PlaySelectedTrack(MusicQueue[1])
@@ -1222,7 +1223,7 @@ function script.update(dt)
                 if EnableMusic and SkipAttempts > 20 and (Session.type ~= 3 or (Session.type == 3 and (Sim.timeToSessionStart < 0 or Sim.timeToSessionStart >= 60000))) and HitValue == 0 then
                     updateRaceStatusData()
                     if #MusicQueue == 0 or (PlayerFinished and (not PlayedFinishTrack) and FinishMusic[1])  then
-                        CurrentTrack = ui.MediaPlayer(getNewTrack())
+                        CurrentTrack = AudioPlayer.create(getNewTrack())
                         DontSkipCurrentTrack = false
                     else
                         PlaySelectedTrack(MusicQueue[1])
@@ -1282,7 +1283,7 @@ end
 function PlaySelectedTrack(selectedTrack)
     CurrentTrack:setVolume(0)
     CurrentTrack:setCurrentTime(CurrentTrack:duration())
-    CurrentTrack = ui.MediaPlayer(selectedTrack[2])
+    CurrentTrack = AudioPlayer.create(selectedTrack[2])
     CurrentVolume = TargetVolume*TargetVolumeMultiplier
     CurrentTrack:setVolume(CurrentVolume)
     CurrentTrack:play()
@@ -1779,6 +1780,10 @@ function KeybindsTab()
 end
 
 function DebugTab()
+    ui.text("Audio Backend: " .. AudioBackend)
+    if CurrentTrack then
+        ui.text("Track Valid: " .. tostring(CurrentTrack:isValid()))
+    end
     if CurrentlyPlaying then
         ui.text("CurrentlyPlaying: " .. CurrentlyPlaying)
     else
@@ -1803,6 +1808,9 @@ function script.windowMain()
     NeedToSaveConfig = false
     local checkbox
 
+    if AudioBackend == 'none' then
+        ui.text("[WARNING] No working audio backend found, music will not play. Update Custom Shaders Patch to a recent version. On older CSP builds the fallback backend also requires Windows Media codecs to be installed. See Debug tab for details.")
+    end
     checkbox = ui.checkbox("Enable Music", EnableMusic)
     if checkbox then
         EnableMusic = not EnableMusic
