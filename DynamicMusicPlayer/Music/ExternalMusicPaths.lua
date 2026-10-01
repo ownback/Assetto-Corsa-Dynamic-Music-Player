@@ -1,6 +1,7 @@
 -- Specify extra directories for music from anywhere in your filesystem.
 
 -- REMEMBER THAT THESE PATHS MUST USE / AS SEPARATORS INSTEAD OF \ WHICH IS USED BY WINDOWS
+-- Examples: Windows: "D:/Music/Race" | Linux: "/home/youruser/Music/Race"
 -- I take no responsibility for the app breaking down after editing this file.
 -- Make sure directories specified here don't contain any unsupported files.
 -- Make sure that after each directory you add a , otherwise Lua will crash.

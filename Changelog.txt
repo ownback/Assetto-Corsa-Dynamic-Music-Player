@@ -1,3 +1,13 @@
+5.0
+  Changes:
+    - Cross-platform release: music now plays through FMOD, the audio engine built into the game (via ac.AudioEvent.fromFile), so the app works on both Windows and Linux (Assetto Corsa running through Proton/Wine), as well as on Windows installs that are missing Windows Media Player.
+    - The old Windows Media Foundation backend (ui.MediaPlayer) is kept as an automatic fallback for CSP builds that don't have ac.AudioEvent.fromFile. On Linux, a recent CSP version is required.
+    - Old playback handles are now explicitly disposed when switching tracks, preventing overlapping audio in edge cases.
+    - Corrupt or missing audio files are now skipped safely instead of crashing the app.
+    - Debug tab now shows the active audio backend and whether the current track is valid.
+    - If no audio backend is available, the app shows a warning in the settings app instead of failing silently.
+    - FMOD decodes MP3, OGG Vorbis, FLAC and WAV. On Windows with the fallback backend, anything Windows Media Player can decode still works (e.g. WMA, M4A).
+
 4.0
   Changes:
     - Completely reworked the Now Playing Widgets architecture.
